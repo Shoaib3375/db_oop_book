@@ -1,5 +1,5 @@
 <?php
-class Product{
+class Products{
     private $item_name = '';
     private $item_price= '';
     public function __construct()
