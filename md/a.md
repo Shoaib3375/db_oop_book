@@ -1,177 +1,168 @@
-# Level 1 Data Flow Diagram (DFD) - Laravel Multi-vendor E-commerce Application
+# Data Flow Graph - Laravel Multi-vendor E-commerce Application
 
-## External Entities
-- **Customer/User** - End users who browse and purchase products
-- **Vendor** - Sellers who manage their products and orders
-- **Admin/Superadmin** - System administrators who manage the platform
-- **Payment Gateway** - PayPal, Iyzico payment processors
-- **Shipping Service** - Shiprocket API for shipping management
-- **Email Service** - Mailtrap for sending emails
-- **SMS Service** - For sending offline SMS notifications
+## Level 1 Data Flow Diagram (Visual Graph)
 
-## Main Processes (Level 1)
+```mermaid
+graph TD
+    %% External Entities
+    Customer[👤 Customer/User]
+    Vendor[🏪 Vendor]
+    Admin[👨‍💼 Admin/Superadmin]
+    PaymentGW[💳 Payment Gateway]
+    ShippingAPI[🚚 Shipping Service]
+    EmailSvc[📧 Email Service]
+    SMSSvc[📱 SMS Service]
 
-### 1.0 User Management Process
-**Inputs:**
-- Registration data from Customer/User
-- Login credentials from Customer/User/Vendor/Admin
-- Profile updates from users
+    %% Main Processes
+    UserMgmt[1.0 User Management]
+    ProductMgmt[2.0 Product Management]
+    OrderMgmt[3.0 Order Management]
+    PaymentProc[4.0 Payment Processing]
+    InventoryMgmt[5.0 Inventory Management]
+    ContentMgmt[6.0 Content Management]
+    CommProc[7.0 Communication Process]
+    Analytics[8.0 Analytics & Reporting]
 
-**Outputs:**
-- User authentication status
-- Account activation emails
-- User profile data
+    %% Data Stores
+    UsersDB[(Users Database)]
+    ProductsDB[(Products Database)]
+    OrdersDB[(Orders Database)]
+    PaymentsDB[(Payments Database)]
+    CategoriesDB[(Categories Database)]
+    CouponsDB[(Coupons Database)]
+    AnalyticsDB[(Analytics Database)]
+    ContentDB[(Content Database)]
 
-**Data Stores:**
-- Users Database
-- Admin Database
+    %% Customer Flows
+    Customer <--> UserMgmt
+    Customer <--> ProductMgmt
+    Customer <--> OrderMgmt
+    Customer <--> PaymentProc
 
-### 2.0 Product Management Process
-**Inputs:**
-- Product data from Vendor/Admin
-- Product images and videos
-- Category and attribute data
-- Inventory updates via webhook
+    %% Vendor Flows
+    Vendor <--> UserMgmt
+    Vendor <--> ProductMgmt
+    Vendor <--> OrderMgmt
+    Vendor <--> InventoryMgmt
 
-**Outputs:**
-- Product listings to Customer
-- Product search results
-- Product catalogs
+    %% Admin Flows
+    Admin <--> UserMgmt
+    Admin <--> ContentMgmt
+    Admin <--> Analytics
 
-**Data Stores:**
-- Products Database
-- Categories Database
-- Product Images Storage
+    %% External Service Flows
+    PaymentGW <--> PaymentProc
+    ShippingAPI <--> OrderMgmt
+    EmailSvc <--> CommProc
+    SMSSvc <--> CommProc
 
-### 3.0 Order Management Process
-**Inputs:**
-- Order requests from Customer
-- Payment confirmations from Payment Gateway
-- Shipping updates from Shipping Service
+    %% Process to Database Flows
+    UserMgmt <--> UsersDB
+    ProductMgmt <--> ProductsDB
+    ProductMgmt <--> CategoriesDB
+    OrderMgmt <--> OrdersDB
+    PaymentProc <--> PaymentsDB
+    PaymentProc <--> CouponsDB
+    InventoryMgmt <--> ProductsDB
+    ContentMgmt <--> ContentDB
+    ContentMgmt <--> CategoriesDB
+    Analytics <--> AnalyticsDB
 
-**Outputs:**
-- Order confirmations to Customer
-- Order details to Vendor
-- Shipping notifications
-- Order invoices (PDF)
+    %% Inter-process Communications
+    OrderMgmt --> CommProc
+    PaymentProc --> CommProc
+    UserMgmt --> CommProc
+    OrderMgmt --> Analytics
+    PaymentProc --> Analytics
+    ProductMgmt --> Analytics
 
-**Data Stores:**
-- Orders Database
-- Order Logs Database
+    %% Styling
+    classDef entity fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef process fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef datastore fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
 
-### 4.0 Payment Processing
-**Inputs:**
-- Payment requests from Customer
-- Payment gateway responses
-- Coupon codes from Customer
-
-**Outputs:**
-- Payment confirmations
-- Transaction records
-- Commission calculations for vendors
-
-**Data Stores:**
-- Payments Database
-- Coupons Database
-- Vendor Commissions Database
-
-### 5.0 Inventory Management Process
-**Inputs:**
-- Stock updates from Vendor
-- Webhook inventory updates
-- Product attribute changes
-
-**Outputs:**
-- Stock availability to Customer
-- Low stock alerts to Vendor
-- Inventory reports
-
-**Data Stores:**
-- Products Database
-- Product Attributes Database
-
-### 6.0 Content Management Process
-**Inputs:**
-- Banner content from Admin
-- Category data from Admin
-- SEO meta tags from Admin
-
-**Outputs:**
-- Website banners to Customer
-- Dynamic breadcrumbs
-- SEO optimized pages
-
-**Data Stores:**
-- Banners Database
-- Categories Database
-- SEO Data Database
-
-### 7.0 Communication Process
-**Inputs:**
-- Email templates from Admin
-- Order status updates
-- Newsletter subscriptions from Customer
-
-**Outputs:**
-- Confirmation emails via Email Service
-- SMS notifications via SMS Service
-- Newsletter emails
-
-**Data Stores:**
-- Email Templates Database
-- Newsletter Subscribers Database
-
-### 8.0 Analytics & Reporting Process
-**Inputs:**
-- User activity data
-- Sales data from orders
-- Product view data
-
-**Outputs:**
-- Sales reports to Admin/Vendor
-- User behavior analytics
-- Product performance reports
-
-**Data Stores:**
-- Analytics Database
-- Reports Database
-
-## Data Flow Summary
-
-```
-Customer ←→ [1.0 User Management] ←→ Users DB
-Customer ←→ [2.0 Product Management] ←→ Products DB
-Customer ←→ [3.0 Order Management] ←→ Orders DB
-Customer ←→ [4.0 Payment Processing] ←→ Payments DB
-
-Vendor ←→ [1.0 User Management] ←→ Users DB
-Vendor ←→ [2.0 Product Management] ←→ Products DB
-Vendor ←→ [3.0 Order Management] ←→ Orders DB
-Vendor ←→ [5.0 Inventory Management] ←→ Products DB
-
-Admin ←→ [1.0 User Management] ←→ Users DB
-Admin ←→ [6.0 Content Management] ←→ Content DB
-Admin ←→ [8.0 Analytics & Reporting] ←→ Analytics DB
-
-Payment Gateway ←→ [4.0 Payment Processing]
-Shipping Service ←→ [3.0 Order Management]
-Email Service ←→ [7.0 Communication Process]
-SMS Service ←→ [7.0 Communication Process]
+    class Customer,Vendor,Admin,PaymentGW,ShippingAPI,EmailSvc,SMSSvc entity
+    class UserMgmt,ProductMgmt,OrderMgmt,PaymentProc,InventoryMgmt,ContentMgmt,CommProc,Analytics process
+    class UsersDB,ProductsDB,OrdersDB,PaymentsDB,CategoriesDB,CouponsDB,AnalyticsDB,ContentDB datastore
 ```
 
-## Key Data Stores
-- **Users Database** - Customer, vendor, admin accounts
-- **Products Database** - Product information, inventory, attributes
-- **Orders Database** - Order details, status, history
-- **Payments Database** - Transaction records, payment methods
-- **Categories Database** - Product categories and sections
-- **Coupons Database** - Discount codes and rules
-- **Analytics Database** - User behavior and sales data
-- **Content Database** - Banners, SEO data, website content
+## Simplified Core Flow
 
-## API Integration Points
-- **Shiprocket API** - Shipping and order tracking
-- **PayPal/Iyzico APIs** - Payment processing
-- **Email Service API** - Email notifications
-- **SMS Service API** - SMS notifications
-- **Webhook Endpoints** - Inventory updates
+```mermaid
+flowchart LR
+    A[Customer] --> B[Browse Products]
+    B --> C[Add to Cart]
+    C --> D[Checkout]
+    D --> E[Payment]
+    E --> F[Order Placed]
+    F --> G[Vendor Notification]
+    G --> H[Ship Order]
+    H --> I[Order Delivered]
+    
+    V[Vendor] --> J[Add Products]
+    J --> K[Manage Inventory]
+    K --> L[Process Orders]
+    
+    AD[Admin] --> M[Manage Platform]
+    M --> N[Monitor Sales]
+    N --> O[Generate Reports]
+```
+
+## Data Flow by User Type
+
+### Customer Journey
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant P as Product System
+    participant O as Order System
+    participant Pay as Payment System
+    participant S as Shipping System
+    
+    C->>P: Browse/Search Products
+    P-->>C: Product Listings
+    C->>O: Place Order
+    O->>Pay: Process Payment
+    Pay-->>O: Payment Confirmed
+    O->>S: Initiate Shipping
+    S-->>C: Shipping Updates
+```
+
+### Vendor Workflow
+```mermaid
+sequenceDiagram
+    participant V as Vendor
+    participant P as Product System
+    participant I as Inventory System
+    participant O as Order System
+    participant A as Analytics System
+    
+    V->>P: Add/Update Products
+    V->>I: Update Inventory
+    O->>V: New Order Notification
+    V->>O: Process Order
+    A-->>V: Sales Reports
+```
+
+## Key Integration Points
+
+```mermaid
+graph LR
+    subgraph "External APIs"
+        PayPal[PayPal API]
+        Iyzico[Iyzico API]
+        Shiprocket[Shiprocket API]
+        Mailtrap[Mailtrap API]
+    end
+    
+    subgraph "Core System"
+        Payment[Payment Processing]
+        Shipping[Order Management]
+        Email[Communication]
+    end
+    
+    PayPal --> Payment
+    Iyzico --> Payment
+    Shiprocket --> Shipping
+    Mailtrap --> Email
+```
